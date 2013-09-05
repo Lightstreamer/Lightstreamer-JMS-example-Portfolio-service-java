@@ -99,7 +99,7 @@ Finally check the log4j configuration file.
 * [Lightstreamer Portfolio Demo Adapter](https://github.com/Weswit/Lightstreamer-example-Portfolio-adapter-java)
 * [Lightstreamer Reusable Metadata Adapter in Java](https://github.com/Weswit/Lightstreamer-example-ReusableMetadata-adapter-java)
 * [Lightstreamer JMS Gateway StockList Demo Service for Java](https://github.com/Weswit/Lightstreamer-JMS-example-StockList-service-java)
-* To be add [Lightstreamer JMS Gateway Chat Demo Service for Java]()
+* [Lightstreamer JMS Gateway Chat Demo Service for Java](https://github.com/Weswit/Lightstreamer-JMS-example-Chat-service-java)
 
 # Lightstreamer Compatibility Notes #
 
