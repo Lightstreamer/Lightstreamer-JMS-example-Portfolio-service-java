@@ -1,12 +1,12 @@
 # Lightstreamer JMS Gateway Portfolio Demo Service for Java #
 
-This project contains the source code and all the resources needed to install the Portfolio Service for Lightstreamer JMS Gateway.<br>
+This project contains the source code and all the resources needed to install the Portfolio Demo Service for Lightstreamer JMS Gateway.<br>
 
 Check out the sources for further explanations.
 
 # Build #
 
-If you want to skip the build process of this Service please note that in the [deploy release](https://github.com/Weswit/Lightstreamer-jms-example-Portfolio-service-java/releases) of this project you can find the "deploy.zip" file that contains a ready-made deployment resource for the Lightstreamer server.<br>
+If you want to skip the build process of this Service please note that in the [deploy release](https://github.com/Weswit/Lightstreamer-jms-example-Portfolio-service-java/releases) of this project you can find the "deploy.zip" file that contains a ready-made deployment resource for the Lightstreamer server. Please note that the zip file includes resources for this service demo as well as for [Chat Demo]() and [StockList Demo](https://github.com/Weswit/Lightstreamer-JMS-example-StockList-service-java) services.<br>
 
 # Deploy #
 
