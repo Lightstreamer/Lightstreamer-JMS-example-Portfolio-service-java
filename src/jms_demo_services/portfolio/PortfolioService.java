@@ -337,8 +337,7 @@ public class PortfolioService implements MessageListener {
             Set<String> keys = currentStatus.keySet();
             
             // Iterates through the Hash representing the actual status to send
-            // the snapshot to
-            // the kernel
+            // the snapshot to the client
             for (String key : keys)
                 onAdd(_portfolioId, key, currentStatus.get(key).intValue(), true);
             
