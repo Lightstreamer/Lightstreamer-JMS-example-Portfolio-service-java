@@ -1,4 +1,4 @@
-# Lightstreamer JMS Gateway Portfolio Demo Service for Java #
+# Lightstreamer JMS Gateway - Portfolio Demo - Java (JMS) Service #
 
 This project contains the source code and all the resources needed to install the Portfolio Demo Service for Lightstreamer JMS Gateway.<br>
 
@@ -99,13 +99,13 @@ Please refer to Lightstreamer web site [download page](http://www.lightstreamer.
 # See Also #
 
 ## Clients using this Service ##
-* [Lightstreamer JMS Gateway Portfolio Demo Client for JavaScript](https://github.com/Weswit/Lightstreamer-JMS-example-Portfolio-client-javascript)
+* [Lightstreamer JMS Gateway - Basic Portfolio Demo - HTML Client](https://github.com/Weswit/Lightstreamer-JMS-example-Portfolio-client-javascript)
 
 ## Related projects ##
-* [Lightstreamer Portfolio Demo Adapter](https://github.com/Weswit/Lightstreamer-example-Portfolio-adapter-java)
-* [Lightstreamer Reusable Metadata Adapter in Java](https://github.com/Weswit/Lightstreamer-example-ReusableMetadata-adapter-java)
-* [Lightstreamer JMS Gateway StockList Demo Service for Java](https://github.com/Weswit/Lightstreamer-JMS-example-StockList-service-java)
-* [Lightstreamer JMS Gateway Chat Demo Service for Java](https://github.com/Weswit/Lightstreamer-JMS-example-Chat-service-java)
+* [Lightstreamer - Portfolio Demo - Java Adapter](https://github.com/Weswit/Lightstreamer-example-Portfolio-adapter-java)
+* [Lightstreamer - Reusable Metadata Adapters - Java Adapter](https://github.com/Weswit/Lightstreamer-example-ReusableMetadata-adapter-java)
+* [Lightstreamer JMS Gateway - Stock-List Demo - Java (JMS) Service](https://github.com/Weswit/Lightstreamer-JMS-example-StockList-service-java)
+* [Lightstreamer JMS Gateway - Basic Chat Demo - Java (JMS) Service](https://github.com/Weswit/Lightstreamer-JMS-example-Chat-service-java)
 
 # Lightstreamer Compatibility Notes #
 
