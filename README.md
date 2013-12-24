@@ -1,9 +1,12 @@
 # Lightstreamer JMS Gateway - Portfolio Demo - Java (JMS) Service #
 
+<!-- START DESCRIPTION lightstreamer-jms-example-portfolio-service-java -->
+
 This project contains the source code and all the resources needed to install the Portfolio Demo Service for Lightstreamer JMS Gateway.<br>
 
 Check out the sources for further explanations.
 
+<!-- END DESCRIPTION lightstreamer-jms-example-portfolio-service-java -->
 # Build #
 
 If you want to skip the build process of this Service please note that in the [deploy release](https://github.com/Weswit/Lightstreamer-jms-example-Portfolio-service-java/releases) of this project you can find the "deploy.zip" file that contains a ready-made deployment resource for the Lightstreamer server.<br>
@@ -99,8 +102,10 @@ Please refer to Lightstreamer web site [download page](http://www.lightstreamer.
 # See Also #
 
 ## Clients using this Service ##
+<!-- START RELATED_ENTRIES -->
 * [Lightstreamer JMS Gateway - Basic Portfolio Demo - HTML Client](https://github.com/Weswit/Lightstreamer-JMS-example-Portfolio-client-javascript)
 
+<!-- END RELATED_ENTRIES -->
 ## Related projects ##
 * [Lightstreamer - Portfolio Demo - Java Adapter](https://github.com/Weswit/Lightstreamer-example-Portfolio-adapter-java)
 * [Lightstreamer - Reusable Metadata Adapters - Java Adapter](https://github.com/Weswit/Lightstreamer-example-ReusableMetadata-adapter-java)
