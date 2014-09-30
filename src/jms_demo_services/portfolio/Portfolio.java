@@ -69,12 +69,12 @@ public class Portfolio {
         _executor = Executors.newSingleThreadExecutor();
     }
 
-    public synchronized void buy(String stock, int qty) throws Exception {
+    public synchronized void buy(String stock, int qty) {
         if (qty <= 0) {
         	
             // We can't buy 0 or less...
             _log.warn("Cannot buy " + qty + " " + stock + " for " + _id + " use an integer greater than 0");
-            throw new Exception("Cannot buy " + qty + " " + stock + " for " + _id + " use an integer greater than 0");
+            throw new IllegalArgumentException("Cannot buy " + qty + " " + stock + " for " + _id + " use an integer greater than 0");
         }
 
         _log.debug("Buying " + qty + " " + stock + " for " + _id);
@@ -83,12 +83,12 @@ public class Portfolio {
         changeQty(stock,qty);
     }
 
-    public synchronized void sell(String stock, int qty) throws Exception {
+    public synchronized void sell(String stock, int qty) {
         if (qty <= 0) {
 
         	// We can't sell 0 or less...
             _log.warn("Cannot sell " + qty + " " + stock + " for " + _id + " use an integer greater than 0");
-            throw new Exception("Cannot sell " + qty + " " + stock + " for " + _id + " use an integer greater than 0");
+            throw new IllegalArgumentException("Cannot sell " + qty + " " + stock + " for " + _id + " use an integer greater than 0");
         }
 
         _log.debug("Selling " + qty + " " + stock + " for " + _id);
@@ -99,6 +99,11 @@ public class Portfolio {
 
     private synchronized void changeQty(String stock, int qty) {
     	
+        if (!isValidStock(stock)) {
+            _log.warn(stock+" does not exist");
+            throw new IllegalArgumentException(stock+" does not exist");
+        }
+        
         // Get the old quantity for the stock
         Integer oldQty = _quantities.get(stock);
         int newQty;
@@ -177,6 +182,23 @@ public class Portfolio {
     }
     
     
+    private boolean isValidStock(String stock) {
+       if (!stock.startsWith("item")) {
+           return false;
+       }
+       
+       String stockNumString = stock.substring(4);
+        
+       int stockNum;
+       try { 
+           stockNum = Integer.parseInt(stockNumString);
+       } catch(NumberFormatException nfe) {
+           return false;
+       }
+       
+       return stockNum > 0 && stockNum <= 30;
+    }
+
     public synchronized void flushToListener(final PortfolioListener listener) {
         // Clone the actual status of the portfolio
         @SuppressWarnings("unchecked") 
