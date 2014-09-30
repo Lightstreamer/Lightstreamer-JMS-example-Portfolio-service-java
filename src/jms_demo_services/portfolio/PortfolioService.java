@@ -29,7 +29,9 @@ import org.apache.log4j.Logger;
 
 public class PortfolioService implements MessageListener {
     
-    private static final String PORTFOLIO_STATUS_REQUEST = "GET_PORTFOLIO_STATUS"; 
+    private static final String PORTFOLIO_STATUS_REQUEST = "GET_PORTFOLIO_STATUS";
+    private static final String BUY_REQUEST = "BUY";
+    private static final String SELL_REQUEST = "SELL";
    
     private Logger _log;
 
@@ -107,28 +109,23 @@ public class PortfolioService implements MessageListener {
         
         if (message instanceof MapMessage) {
             String opMsg = null;
+            
             final MapMessage mapMessage = (MapMessage) message;
+            final String portfolioId;
             try {
                 opMsg = mapMessage.getString("request");
+                portfolioId = mapMessage.getString("portfolio");
             } catch (JMSException e) {
                 _log.error("Portfolio: JMSException: " + e.getMessage());
                 return;
             }
-            _log.debug("Portfolio: message: TextMessage received: " + opMsg);
+            
+            _log.debug("Portfolio: message: request received: " + opMsg + " for " + portfolioId);
+            Portfolio requestedPortfolio = _feed.getPortfolio(portfolioId);
             
             if (opMsg.equals(PORTFOLIO_STATUS_REQUEST)) {
                 
-                final String portfolioId;
-                try {
-                    portfolioId = mapMessage.getString("portfolio");
-                } catch (JMSException e) {
-                    _log.error("Portfolio: JMSException: " + e.getMessage());
-                    return;
-                }
-                
-                Portfolio requestedPortfolio = _feed.getPortfolio(portfolioId);
                 requestedPortfolio.flushToListener(new PortfolioListener() {
-
                     @Override
                     public void update(String stock, int qty) {
                         PortfolioMessage toSend = new PortfolioMessage(portfolioId, stock, String.valueOf(qty));
@@ -138,9 +135,29 @@ public class PortfolioService implements MessageListener {
                             _log.error("Portfolio: unable to send message - JMSException:" + e.getMessage());
                         }
                     }
-                   
                 });
-                                
+                
+            } else if (opMsg.equals(BUY_REQUEST) || opMsg.equals(SELL_REQUEST) ) {
+                
+                String stock;
+                int qty;
+                try {
+                    stock = mapMessage.getString("stock");
+                    qty = mapMessage.getInt("quantity");
+                } catch (JMSException e) {
+                    _log.error("Portfolio: JMSException: " + e.getMessage());
+                    return;
+                }
+                
+                try {
+                    if (opMsg.equals(BUY_REQUEST)) {
+                        requestedPortfolio.buy(stock, qty);
+                    } else {
+                        requestedPortfolio.sell(stock, qty);
+                    }
+                } catch(IllegalArgumentException iae) {
+                    _log.error("Portfolio: IllegalArgumentException during buy/sell: " + iae.getMessage());
+                }
             }
             
         }
