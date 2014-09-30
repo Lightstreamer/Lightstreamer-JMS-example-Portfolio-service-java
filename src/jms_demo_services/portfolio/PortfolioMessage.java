@@ -31,18 +31,14 @@ public class PortfolioMessage implements Serializable {
     // The updated stock key
     public String key;
     
-    // The update command
-    public String command;
-    
     // The quantity
     public String qty;
     
     public PortfolioMessage() {}
     
-    public PortfolioMessage(String portfolioId, String key, String command, String qty) {
-    	this.portfolioId= portfolioId;
-    	this.key= key;
-    	this.command= command;
-    	this.qty= qty;
+    public PortfolioMessage(String portfolioId, String key, String qty) {
+        this.portfolioId= portfolioId;
+        this.key= key;
+        this.qty= qty;
     }
 }

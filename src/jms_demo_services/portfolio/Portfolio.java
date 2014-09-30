@@ -18,6 +18,7 @@
 package jms_demo_services.portfolio;
 
 import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -111,9 +112,6 @@ public class Portfolio {
                 return;
             }
             
-            // Set oldQty to 0 to let the listener know that we previously didn't have such stock
-            oldQty = 0;
-            
             // The new quantity is equal to the bought value
             newQty = qty;
 
@@ -159,7 +157,6 @@ public class Portfolio {
             
             // Copy the values to constant to be used inside the inner class
             final int newVal = newQty;
-            final int oldVal = oldQty.intValue();
             final String stockId = stock;
 
             // If we have a listener create a new Runnable to be used as a task to pass the
@@ -170,7 +167,7 @@ public class Portfolio {
                     // Call the update on the listener;
                     // in case the listener has just been detached,
                     // the listener should detect the case
-                    localListener.update(stockId, newVal, oldVal);
+                    localListener.update(stockId, newVal);
                 }
             };
 
@@ -178,8 +175,33 @@ public class Portfolio {
             _executor.execute(updateTask);
         }
     }
+    
+    
+    public synchronized void flushToListener(final PortfolioListener listener) {
+        // Clone the actual status of the portfolio
+        @SuppressWarnings("unchecked") 
+        final HashMap<String, Integer> currentStatus = (HashMap<String, Integer>) _quantities.clone();
+        
+        
+        // Create a new Runnable to be used as a task to pass the actual status to the listener
+        Runnable statusTask = new Runnable() {
+            public void run() {
+                Set<String> keys = currentStatus.keySet();
+                
+                // Iterates through the Hash representing the current status to send
+                // the snapshot to the client
+                for (String key : keys) {
+                    listener.update(key, currentStatus.get(key).intValue());
+                }
+            }
+        };
 
-    public synchronized void setListener(PortfolioListener newListener) {
+        // We add the task on the executor to pass to the listener the actual status
+        _executor.execute(statusTask);
+        
+    }
+
+    public synchronized void setListener(final PortfolioListener newListener) {
         if (newListener == null) {
             
         	// We don't accept a null parameter. to delete the actual listener
@@ -192,26 +214,9 @@ public class Portfolio {
 
         _log.debug("Listener set on " + _id);
 
-        // Copy the actual listener to a final variable that will be used inside the inner class
-        final PortfolioListener localListener = newListener;
+        //send the current status to the listener
+        flushToListener(newListener);
 
-        // Clone the actual status of the portfolio
-        @SuppressWarnings("unchecked") 
-        final HashMap<String, Integer> currentStatus = (HashMap<String, Integer>) _quantities.clone();
-
-        // Create a new Runnable to be used as a task to pass the actual status to the listener
-        Runnable statusTask = new Runnable() {
-            public void run() {
-                
-            	// Call the onActualStatus on the listener;
-                // in case the listener has just been detached,
-                // the listener should detect the case
-                localListener.onActualStatus(currentStatus);
-            }
-        };
-
-        // We add the task on the executor to pass to the listener the actual status
-        _executor.execute(statusTask);
     }
 
     public synchronized void removeListener() {

@@ -17,8 +17,6 @@
 
 package jms_demo_services.portfolio;
 
-import java.util.Map;
-
 /**
  * Used to receive data from the simulated portfolio feed in an
  * asynchronous way.
@@ -28,17 +26,10 @@ import java.util.Map;
 public interface PortfolioListener {
 
     /**
-     * Called at first to send the actual portfolio contents.
-     * The map associates stock ids with quantities.
-     * Only stocks with positive quantities are included.
-     */
-    public void onActualStatus(Map<String, Integer> currentStatus);
-
-    /**
      * Called on each new update on the state of the portfolio.
      * If oldQty is 0 means that the stock wasn't on the portfolio before;
      * if qty is 0 means that the stock was completely sold from the portfolio.
      */
-    public void update(String stock, int qty, int oldQty);
+    public void update(String stock, int qty);
 
 }
