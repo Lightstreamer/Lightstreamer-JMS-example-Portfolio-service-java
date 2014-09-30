@@ -18,6 +18,7 @@
 package jms_demo_services.portfolio;
 
 import javax.jms.JMSException;
+import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.naming.NamingException;
@@ -27,6 +28,8 @@ import jms_demo_services.JmsWrapper;
 import org.apache.log4j.Logger;
 
 public class PortfolioService implements MessageListener {
+    
+    private static final String PORTFOLIO_STATUS_REQUEST = "GET_PORTFOLIO_STATUS"; 
    
     private Logger _log;
 
@@ -100,6 +103,49 @@ public class PortfolioService implements MessageListener {
      */
     public void onMessage(Message message) {
         _log.debug("Portfolio: message received: processing...");
+        
+        
+        if (message instanceof MapMessage) {
+            String opMsg = null;
+            final MapMessage mapMessage = (MapMessage) message;
+            try {
+                opMsg = mapMessage.getString("request");
+            } catch (JMSException e) {
+                _log.error("Portfolio: JMSException: " + e.getMessage());
+                return;
+            }
+            _log.debug("Portfolio: message: TextMessage received: " + opMsg);
+            
+            if (opMsg.equals(PORTFOLIO_STATUS_REQUEST)) {
+                
+                final String portfolioId;
+                try {
+                    portfolioId = mapMessage.getString("portfolio");
+                } catch (JMSException e) {
+                    _log.error("Portfolio: JMSException: " + e.getMessage());
+                    return;
+                }
+                
+                Portfolio requestedPortfolio = _feed.getPortfolio(portfolioId);
+                requestedPortfolio.flushToListener(new PortfolioListener() {
+
+                    @Override
+                    public void update(String stock, int qty) {
+                        PortfolioMessage toSend = new PortfolioMessage(portfolioId, stock, String.valueOf(qty));
+                        try {
+                            _portfolioResponseWrapper.sendObjectResponse(toSend,mapMessage);
+                        } catch (JMSException e) {
+                            _log.error("Portfolio: unable to send message - JMSException:" + e.getMessage());
+                        }
+                    }
+                   
+                });
+                                
+            }
+            
+        }
+        
+        
         
     }
     
