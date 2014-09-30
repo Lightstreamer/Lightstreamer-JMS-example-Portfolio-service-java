@@ -24,6 +24,7 @@ import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
@@ -63,6 +64,8 @@ public class JmsWrapper {
     private MessageConsumer _consumer;
 
     private MessageListener _messageListener;
+
+    private MessageProducer _replyProducer;
     
     
     ///////////////////////////////////////////////////////////////////////////
@@ -80,22 +83,22 @@ public class JmsWrapper {
      * Initiates the InitialContext.
      */
     private static void initJMS() throws JMSException, NamingException {
-    	synchronized (JmsWrapper.class) {
-	        if (__jmsReady)
-	            return;
-	
-	        // Prepare a Properties object to be passed to the InitialContext
-	        // constructor giving the InitialContextFactory name and
-	        // the JMS server url
-	        Properties properties = new Properties();
-	        properties.put(Context.INITIAL_CONTEXT_FACTORY, __initialContextFactory);
-	        properties.put(Context.PROVIDER_URL, __providerURL);
-	
-	        __jndiContext = new InitialContext(properties);
-	        __log.info("JNDI Context[" + __jndiContext.getEnvironment() + "]...");
-	
-	        __jmsReady = true;
-    	}
+        synchronized (JmsWrapper.class) {
+            if (__jmsReady)
+                return;
+    
+            // Prepare a Properties object to be passed to the InitialContext
+            // constructor giving the InitialContextFactory name and
+            // the JMS server url
+            Properties properties = new Properties();
+            properties.put(Context.INITIAL_CONTEXT_FACTORY, __initialContextFactory);
+            properties.put(Context.PROVIDER_URL, __providerURL);
+    
+            __jndiContext = new InitialContext(properties);
+            __log.info("JNDI Context[" + __jndiContext.getEnvironment() + "]...");
+    
+            __jmsReady = true;
+        }
     }
 
     /**
@@ -106,24 +109,24 @@ public class JmsWrapper {
             return;
 
         synchronized (JmsWrapper.class) {
-        	if (__connection == null) {
+            if (__connection == null) {
 
-	        	// First of all we have to inititiate the InitialContext
-	        	// (without this we can't instantiate a Session)
-	        	initJMS();
-		        	
-		        // Lookup to find our ConnectionFactory
-		        __log.info("Looking up queue connection factory [" + __connectionFactoryName + "]...");
-		        ConnectionFactory connectionFactory = (ConnectionFactory) __jndiContext.lookup(__connectionFactoryName);
-		
-		        // Get the Connection from our ConnectionFactory
-		        __connection = connectionFactory.createConnection();
-		        __log.debug("Connection created");
-		        
-		        // Start listening to JMS
-		        __connection.start();
-        	}
-        	
+                // First of all we have to inititiate the InitialContext
+                // (without this we can't instantiate a Session)
+                initJMS();
+                    
+                // Lookup to find our ConnectionFactory
+                __log.info("Looking up queue connection factory [" + __connectionFactoryName + "]...");
+                ConnectionFactory connectionFactory = (ConnectionFactory) __jndiContext.lookup(__connectionFactoryName);
+        
+                // Get the Connection from our ConnectionFactory
+                __connection = connectionFactory.createConnection();
+                __log.debug("Connection created");
+                
+                // Start listening to JMS
+                __connection.start();
+            }
+            
             // Get the Session from our Connection
             _session = __connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             __log.debug("Session created");
@@ -132,13 +135,16 @@ public class JmsWrapper {
         }
     }
     
-    
     ///////////////////////////////////////////////////////////////////////////
     // Intance-bound consumer and producer management
 
     public JmsWrapper(String destinationName, boolean destinationIsTopic) {
         _destinationName = destinationName;
         _destinationIsTopic= destinationIsTopic;
+    }
+    
+    public JmsWrapper() {
+        //when initialized like this initConsumer and initProducer will exit in error
     }
 
     public void setMessageListener(MessageListener messageListener) {
@@ -152,17 +158,17 @@ public class JmsWrapper {
 
         // First of all we have to inititiate the Session
         // (without this we can't instantiate a MessageConsumer)
-    	initSession();
+        initSession();
 
-    	if (_destination == null) {
+        if (_destination == null) {
 
-    		// Find our destination
-	        __log.info("Looking up destination [" + _destinationName + "]...");
-	        if (_destinationIsTopic)
-	        	_destination = _session.createTopic(_destinationName);
-	        else
-	        	_destination = _session.createQueue(_destinationName);
-    	}
+            // Find our destination
+            __log.info("Looking up destination [" + _destinationName + "]...");
+            if (_destinationIsTopic)
+                _destination = _session.createTopic(_destinationName);
+            else
+                _destination = _session.createQueue(_destinationName);
+        }
 
         // Get the MessageConsumer from our Session
         _consumer = _session.createConsumer(_destination);
@@ -170,31 +176,40 @@ public class JmsWrapper {
 
         // If set we pass our MessageListener to the MessageConsumer
         if (_messageListener != null)
-        	_consumer.setMessageListener(_messageListener);
+            _consumer.setMessageListener(_messageListener);
     }
 
     /**
      * Prepares the MessageProducer.
      */
     public synchronized void initProducer() throws JMSException, NamingException {
-    	
+        
         // First of all we have to inititiate the Session
         // (without this we can't instantiate a MessageProducer)
         initSession();
         
-    	if (_destination == null) {
+        if (_destination == null) {
 
-    		// Find our destination
-	        __log.info("Looking up destination [" + _destinationName + "]...");
-	        if (_destinationIsTopic)
-	        	_destination = _session.createTopic(_destinationName);
-	        else
-	        	_destination = _session.createQueue(_destinationName);
-    	}
+            // Find our destination
+            __log.info("Looking up destination [" + _destinationName + "]...");
+            if (_destinationIsTopic)
+                _destination = _session.createTopic(_destinationName);
+            else
+                _destination = _session.createQueue(_destinationName);
+        }
 
         // Get the MessageProducer from our Session
         _producer = _session.createProducer(_destination);
         __log.debug("Message producer created");
+    }
+    
+    public synchronized void initResponder() throws JMSException, NamingException {
+        // First of all we have to inititiate the Session
+        // (without this we can't instantiate a MessageProducer)
+        initSession();
+        
+        //we use a producer not bound to a destination: the request will carry the information about the destination
+        _replyProducer = _session.createProducer(null);
     }
 
     /**
@@ -205,16 +220,16 @@ public class JmsWrapper {
 
         synchronized (JmsWrapper.class) {
 
-        	// Check if Session is ready
-	        if (_session == null)
-	            throw new JMSException("Session not ready");
-	
-	        // Get a message
-	       	textMessage = _session.createTextMessage();
+            // Check if Session is ready
+            if (_session == null)
+                throw new JMSException("Session not ready");
+    
+            // Get a message
+               textMessage = _session.createTextMessage();
         }
         
         // Fill it with text (our message to be sent)
-       	textMessage.setText(text);
+           textMessage.setText(text);
 
         // Check if MessageProducer is ready
         if (_producer == null)
@@ -223,25 +238,25 @@ public class JmsWrapper {
         __log.debug("Sending message: " + text);
 
         // Send to JMS
-       	_producer.send(textMessage);
+           _producer.send(textMessage);
     }
     
     /**
      * Sends an object message.
      */
     public synchronized void sendObjectMessage(Serializable obj) throws JMSException {
-    	ObjectMessage objMessage= null;
-    	
-    	synchronized (JmsWrapper.class) {
-    		
-        	// Check if Session is ready
-	        if (_session == null)
-	            throw new JMSException("Session not not ready");
-	
-	        // Get a message
-	        objMessage = _session.createObjectMessage();
-    	}
-    	
+        ObjectMessage objMessage= null;
+        
+        synchronized (JmsWrapper.class) {
+            
+            // Check if Session is ready
+            if (_session == null)
+                throw new JMSException("Session not not ready");
+    
+            // Get a message
+            objMessage = _session.createObjectMessage();
+        }
+        
         // Fill it with obj (our message to be sent)
         objMessage.setObject(obj);
 
@@ -252,6 +267,72 @@ public class JmsWrapper {
         __log.debug("Sending message object " + obj);
 
         // Send to JMS
-       	_producer.send(objMessage);
+           _producer.send(objMessage);
     }
+    
+    /**
+     * Sends a text message.
+     */
+    public synchronized void sendTextResponse(String text, Message request) throws JMSException {
+        TextMessage textMessage = null;
+
+        synchronized (JmsWrapper.class) {
+
+            // Check if Session is ready
+            if (_session == null)
+                throw new JMSException("Session not ready");
+    
+            // Get a message
+            textMessage = _session.createTextMessage();
+        }
+        
+        // Fill it with text (our message to be sent)
+        textMessage.setText(text);
+        
+        // Correlate response with the request
+        textMessage.setJMSCorrelationID(request.getJMSCorrelationID());
+
+        // Check if MessageProducer is ready
+        if (_replyProducer == null)
+            throw new JMSException("Message producer not not ready");
+
+        __log.debug("Sending response: " + text);
+
+        // Send to JMS
+        _replyProducer.send(request.getJMSReplyTo(), textMessage);
+    }
+    
+    /**
+     * Sends an object message.
+     */
+    public synchronized void sendObjectResponse(Serializable obj, Message request) throws JMSException {
+        ObjectMessage objMessage= null;
+        
+        synchronized (JmsWrapper.class) {
+            
+            // Check if Session is ready
+            if (_session == null)
+                throw new JMSException("Session not not ready");
+    
+            // Get a message
+            objMessage = _session.createObjectMessage();
+        }
+        
+        // Fill it with obj (our message to be sent)
+        objMessage.setObject(obj);
+        
+        // Correlate response with the request
+        objMessage.setJMSCorrelationID(request.getJMSCorrelationID());
+
+        // Check if MessageProducer is ready
+        if (_replyProducer == null)
+            throw new JMSException("Message producer not not ready");
+
+        __log.debug("Sending response object " + obj);
+
+        // Send to JMS
+        _replyProducer.send(request.getJMSReplyTo(), objMessage);
+    }
+    
+    
 }
