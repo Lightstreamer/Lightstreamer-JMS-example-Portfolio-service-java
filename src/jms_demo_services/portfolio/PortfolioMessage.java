@@ -23,26 +23,23 @@ import java.io.Serializable;
  * A message published by Portfolio service and received from client.
  */
 public class PortfolioMessage implements Serializable {
-    private static final long serialVersionUID = 1L;
-    
+
+    private static final long serialVersionUID = 3674505151072844205L;
+
     // The portfolio ID
     public String portfolioId;
     
     // The updated stock key
     public String key;
     
-    // The update command
-    public String command;
-    
     // The quantity
     public String qty;
     
     public PortfolioMessage() {}
     
-    public PortfolioMessage(String portfolioId, String key, String command, String qty) {
-    	this.portfolioId= portfolioId;
-    	this.key= key;
-    	this.command= command;
-    	this.qty= qty;
+    public PortfolioMessage(String portfolioId, String key, String qty) {
+        this.portfolioId= portfolioId;
+        this.key= key;
+        this.qty= qty;
     }
 }

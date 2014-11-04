@@ -68,73 +68,75 @@ public class JmsPortfolioDemoService {
      * Main method. Called by script.
      */
     public static void main(String[] args) {
-    	try {
-	        if (args == null || args.length < 1 || args[0] == null) {
-	        	
-	            // If no arguments passed we exit. We need 1 parameter
-	            // containing the path of the configuration file
-	            System.out.println(ERROR_NO_CONF);
-	            return;
-	        }
-	
-	        // Read configuration file
-	        File configFile = new File(args[0]);
-	        Properties params = new Properties();
-	        try {
-	            params.load(new FileInputStream(configFile));
-	
-	        } catch (FileNotFoundException e) {
-	            System.out.println(ERROR_NO_CONF);
-	            return;
-	        
-	        } catch (IOException e) {
-	            System.out.println(ERROR_NO_CONF);
-	            return;
-	        }
-	
-	        // Configure a log4j logger
-	        String logConf= getParam(params,"logConf", true, null);
-	        if (logConf != null) {
-	            try {
-	                DOMConfigurator.configureAndWatch(logConf, 10000);
-	                __log = Logger.getLogger(JmsPortfolioDemoService.class);
-	                
-	            } catch (Exception ex) {
-	                ex.printStackTrace();
-	                System.out.println(ex.getMessage());
-	                throw new IllegalStateException(ERROR_LOG_CONF);
-	            }
-	
-	        } else {
-	            System.out.println(ERROR_LOG_CONF);
-	            throw new IllegalStateException(ERROR_LOG_CONF);
-	        }
-	
-	        __log.info("Portfolio Demo service starting. Loading configuration...");
-	        
-	        // Read parameters
-	        String jmsUrl= getParam(params, "jmsUrl", true, null);
+        try {
+            if (args == null || args.length < 1 || args[0] == null) {
+                
+                // If no arguments passed we exit. We need 1 parameter
+                // containing the path of the configuration file
+                System.out.println(ERROR_NO_CONF);
+                return;
+            }
+    
+            // Read configuration file
+            File configFile = new File(args[0]);
+            Properties params = new Properties();
+            try {
+                params.load(new FileInputStream(configFile));
+    
+            } catch (FileNotFoundException e) {
+                System.out.println(ERROR_NO_CONF);
+                return;
+            
+            } catch (IOException e) {
+                System.out.println(ERROR_NO_CONF);
+                return;
+            }
+    
+            // Configure a log4j logger
+            String logConf= getParam(params,"logConf", true, null);
+            if (logConf != null) {
+                try {
+                    DOMConfigurator.configureAndWatch(logConf, 10000);
+                    __log = Logger.getLogger(JmsPortfolioDemoService.class);
+                    
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    System.out.println(ex.getMessage());
+                    throw new IllegalStateException(ERROR_LOG_CONF);
+                }
+    
+            } else {
+                System.out.println(ERROR_LOG_CONF);
+                throw new IllegalStateException(ERROR_LOG_CONF);
+            }
+    
+            __log.info("Portfolio Demo service starting. Loading configuration...");
+            
+            // Read parameters
+            String jmsUrl= getParam(params, "jmsUrl", true, null);
             String initialContextFactory= getParam(params, "initialContextFactory", true, null);
             String connectionFactory= getParam(params, "connectionFactory", true, null);
             String portfolioTopicName= getParam(params, "portfolioTopicName", true, null);
             String portfolioQueueName= getParam(params, "portfolioQueueName", true, null);
             
-	        // Create our service passing read parameters
-           	new PortfolioService(__log, jmsUrl, initialContextFactory, connectionFactory, portfolioTopicName, portfolioQueueName);
-	
-	        __log.info("Portfolio Demo service ready.");
+            String portfolioNum = getParam(params, "portfolioNum", false, "1");
+            
+            // Create our service passing read parameters
+            new PortfolioService(__log, jmsUrl, initialContextFactory, connectionFactory, portfolioTopicName, portfolioQueueName,Integer.parseInt(portfolioNum));
+    
+            __log.info("Portfolio Demo service ready.");
 
-	        // Avoid termination
-	        Object semaphore= new Object();
-	        synchronized (semaphore) {
-	        	semaphore.wait();
-	        }
-	        
-    	} catch (Exception e) {
-    		if (__log != null)
-    			__log.error("Exception caught while starting Portfolio Demo service: " + e.getMessage(), e);
-    		
-    		e.printStackTrace();
-    	}
+            // Avoid termination
+            Object semaphore= new Object();
+            synchronized (semaphore) {
+                semaphore.wait();
+            }
+            
+        } catch (Exception e) {
+            if (__log != null)
+                __log.error("Exception caught while starting Portfolio Demo service: " + e.getMessage(), e);
+            
+            e.printStackTrace();
+        }
     }
 }
