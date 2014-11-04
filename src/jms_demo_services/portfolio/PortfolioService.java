@@ -126,7 +126,6 @@ public class PortfolioService implements MessageListener {
             if (opMsg.equals(PORTFOLIO_STATUS_REQUEST)) {
                 
                 requestedPortfolio.flushToListener(new PortfolioListener() {
-                    @Override
                     public void update(String stock, int qty) {
                         PortfolioMessage toSend = new PortfolioMessage(portfolioId, stock, String.valueOf(qty));
                         try {
