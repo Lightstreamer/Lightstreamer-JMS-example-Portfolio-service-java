@@ -73,7 +73,7 @@ Once you have selected and installed your JMS broker, you will have to configure
 
 To configure the demo service, follow these steps:
 
-* Copy the `JMS_Portfolio_Demo_Service` directory that you can find in the `deploy.zip` file from the [latest release](https://github.com/Weswit/Lightstreamer-jms-example-Portfolio-service-java/releases) of this project anywhere in your file system, and put previously copied jars under its `lib` subdirectory.
+* Copy the `JMS_Portfolio_Demo_Service` directory that you can find in the `deploy.zip` file from the [latest release](https://github.com/Lightstreamer/Lightstreamer-jms-example-Portfolio-service-java/releases) of this project anywhere in your file system, and put previously copied jars under its `lib` subdirectory.
 * Download the JMS distribution (version 1.1 or 2.0 depending on the broker version in use) from Oracle's Java website. It cannot be distributed with the JMS Gateway for licensing issues. It can be found here: [v1.1](http://www.oracle.com/technetwork/java/docs-136352.html) [v2.0](https://mq.java.net/downloads/ri/).
 * Extract its contents and find the `jms.jar` file under the `lib` directory. Please copy this jar under the `lib` subdirectory of the Demo Service.
 * Then, configure the launch script `start_portfolio_demo_service.bat` (or `start_portfolio_demo_service.sh` if you are under Linux or Mac OS X), adding all the JMS broker-specific jars to the CUSTOM_JARS variable. <i>It is preset with jars for HornetQ</i>.
@@ -87,7 +87,7 @@ Once everything is configured, launch the service with `start_portfolio_demo_ser
 * The JMS Gateway StockList Demo requires a Lightstreamer instance running a properly configured JMS Gateway. Please refer to Lightstreamer web site [download page](http://download.lightstreamer.com/) to find *Lightstreamer server* and *JMS Gateway* download packages.
 * Now grab the jar of the service, `JMSPortfolioDemoService.jar`, and copy it under the lib folder of the JMSGateway adapter just deployed. This is needed since the Gateway must be able to create any object sent or received by its clients. In this case the gateway requires the declaration of the `PortfolioMessage` class.
 
-Now you can test this demo running the [Lightstreamer JMS Gateway - Basic Portfolio Demo - HTML Client](https://github.com/Weswit/Lightstreamer-JMS-example-Portfolio-client-javascript).
+Now you can test this demo running the [Lightstreamer JMS Gateway - Basic Portfolio Demo - HTML Client](https://github.com/Lightstreamer/Lightstreamer-JMS-example-Portfolio-client-javascript).
 
 ## Build
 
@@ -106,14 +106,14 @@ To build your own version of `JMSPortfolioDemoService.jar`, instead of using the
 
 ### Clients Using This Service
 <!-- START RELATED_ENTRIES -->
-* [Lightstreamer JMS Gateway - Basic Portfolio Demo - HTML Client](https://github.com/Weswit/Lightstreamer-JMS-example-Portfolio-client-javascript)
+* [Lightstreamer JMS Gateway - Basic Portfolio Demo - HTML Client](https://github.com/Lightstreamer/Lightstreamer-JMS-example-Portfolio-client-javascript)
 
 <!-- END RELATED_ENTRIES -->
 ### Related Projects
-* [Lightstreamer - Portfolio Demo - Java Adapter](https://github.com/Weswit/Lightstreamer-example-Portfolio-adapter-java)
-* [Lightstreamer - Reusable Metadata Adapters - Java Adapter](https://github.com/Weswit/Lightstreamer-example-ReusableMetadata-adapter-java)
-* [Lightstreamer JMS Gateway - Stock-List Demo - Java (JMS) Service](https://github.com/Weswit/Lightstreamer-JMS-example-StockList-service-java)
-* [Lightstreamer JMS Gateway - Basic Chat Demo - Java (JMS) Service](https://github.com/Weswit/Lightstreamer-JMS-example-Chat-service-java)
+* [Lightstreamer - Portfolio Demo - Java Adapter](https://github.com/Lightstreamer/Lightstreamer-example-Portfolio-adapter-java)
+* [Lightstreamer - Reusable Metadata Adapters - Java Adapter](https://github.com/Lightstreamer/Lightstreamer-example-ReusableMetadata-adapter-java)
+* [Lightstreamer JMS Gateway - Stock-List Demo - Java (JMS) Service](https://github.com/Lightstreamer/Lightstreamer-JMS-example-StockList-service-java)
+* [Lightstreamer JMS Gateway - Basic Chat Demo - Java (JMS) Service](https://github.com/Lightstreamer/Lightstreamer-JMS-example-Chat-service-java)
 
 ## Lightstreamer Compatibility Notes
 
