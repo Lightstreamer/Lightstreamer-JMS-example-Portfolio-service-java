@@ -142,7 +142,7 @@ public class PortfolioService implements MessageListener {
                 int qty;
                 try {
                     stock = mapMessage.getString("stock");
-                    qty = mapMessage.getInt("quantity");
+                    qty = (int) mapMessage.getLong("quantity");
                 } catch (JMSException e) {
                     _log.error("Portfolio: JMSException: " + e.getMessage());
                     return;
