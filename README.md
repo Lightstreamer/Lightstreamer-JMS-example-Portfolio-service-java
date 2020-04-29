@@ -89,7 +89,7 @@ or launch `bin/portfolio_demo_service.bat` on Windows systems.
     ```
     **_NOTE_**: Add a new JMS connector configuration in the case you want to use a differente JMS broker: see the inline comments for details.
 
-Now you can test this demo running the [Lightstreamer JMS Extender - Basic Stock-List Demo - HTML Client](https://github.com/Lightstreamer/Lightstreamer-JMS-example-StockList-client-javascript).
+Now you can test this demo running the [Lightstreamer JMS Extender - Basic Portfolio Demo - HTML Client](https://github.com/Lightstreamer/Lightstreamer-JMS-example-Portfolio-client-javascript).
 
 
 
