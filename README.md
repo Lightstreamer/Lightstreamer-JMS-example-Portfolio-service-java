@@ -30,7 +30,7 @@ There's no need to create topics or queues, because [ActiveMQ Artemis](http://ac
 
 #### TIBCO EMS
 
-1. You should create a topic and a queue. Open the `queues.conf` and `topics.conf` located under `<EMSHome>/bin` and append to them the lines containing (without apexes) "portfolioQueue" for `queues.conf` and "portfolioTopic" for `topics.conf`.
+1. You should create a topic and a queue. Open the `queues.conf` and `topics.conf` located under `<EMSHome>/bin/` and append to them the lines containing (without apexes) "portfolioQueue" for `queues.conf` and "portfolioTopic" for `topics.conf`.
 
 2. Copy `tibjms.jar` from `<EMSHome>/lib` to the `local_libs` folder.
 
