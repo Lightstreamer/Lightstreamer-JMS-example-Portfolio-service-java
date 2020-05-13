@@ -16,8 +16,18 @@ package jms_demo_services.config;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Configuration {
+
+  private static Logger log = LoggerFactory.getLogger(Configuration.class);
 
   public final String initialContextFactory;
 
@@ -29,7 +39,7 @@ public class Configuration {
 
   public final String queueName;
 
-  public final int portoflioNum;
+  public final int portfolioNum;
 
   public final String username;
 
@@ -41,9 +51,26 @@ public class Configuration {
     this.connectionFactoryName = builder.connectionFactoryName;
     this.topicName = builder.topicName;
     this.queueName = builder.queueName;
-    this.portoflioNum = builder.portfolioNum;
+    this.portfolioNum = builder.portfolioNum;
     this.username = builder.username;
     this.password = builder.password;
+  }
+
+  public InitialContext newInitialContext() {
+    try {
+      // Prepare a Properties object to be passed to the InitialContext
+      // constructor giving the InitialContextFactory name and the JMS server url
+      Properties properties = new Properties();
+      properties.put(Context.INITIAL_CONTEXT_FACTORY, initialContextFactory);
+      properties.put(Context.PROVIDER_URL, jmsUrl);
+
+      InitialContext jndiContext = new InitialContext(properties);
+      log.info("JNDI Context[{}]...", jndiContext.getEnvironment());
+      return jndiContext;
+    } catch (NamingException e) {
+      log.error("Error while preparing the JMS Session");
+      throw new RuntimeException(e);
+    }
   }
 
   public static class Builder {
@@ -70,10 +97,10 @@ public class Configuration {
       return this;
     }
 
-    public Builder withInitialiContextFactory(String initialCotextFactory) {
-      Objects.requireNonNull(initialCotextFactory,
+    public Builder withInitialContextFactory(String initialContextFactory) {
+      Objects.requireNonNull(initialContextFactory,
           "Please provide the <initialContextFactory> entry");
-      this.initialContextFactory = initialCotextFactory;
+      this.initialContextFactory = initialContextFactory;
       return this;
     }
 
@@ -97,7 +124,9 @@ public class Configuration {
     }
 
     public Builder withPortfolioNum(String portfolioNum) {
-      this.portfolioNum = Optional.ofNullable(portfolioNum).map(Integer::parseInt).orElse(1);
+      this.portfolioNum = Optional.ofNullable(portfolioNum)
+        .map(Integer::parseInt)
+        .orElse(1);
       return this;
     }
 
