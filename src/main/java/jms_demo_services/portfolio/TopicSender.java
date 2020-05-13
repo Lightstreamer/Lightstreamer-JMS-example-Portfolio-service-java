@@ -21,6 +21,8 @@ import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.jms.Topic;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,13 +35,19 @@ public class TopicSender {
 
   private final MessageProducer producer;
 
-  public TopicSender(Session session, String topicName) {
+  public TopicSender(InitialContext jndiContext, Session session, String topicName) {
     this.session = session;
 
     // Find our destination
     log.info("Looking up topic [{}]...", topicName);
     try {
-      Topic destination = session.createTopic(topicName);
+      Topic destination;
+      try {
+        destination = (Topic) jndiContext.lookup(topicName);
+      } catch (NamingException ne) {
+        // In case of dynamic destinations
+        destination = session.createTopic(topicName);
+      }
 
       // Get the MessageProducer from our Session
       producer = session.createProducer(destination);
