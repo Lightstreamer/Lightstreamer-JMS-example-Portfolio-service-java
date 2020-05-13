@@ -15,8 +15,6 @@
 
 package jms_demo_services.portfolio;
 
-import java.util.Properties;
-
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -26,8 +24,8 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import javax.jms.Queue;
 import javax.jms.Session;
-import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,22 +67,28 @@ public class PortfolioService implements MessageListener {
   private final int portfolioNum;
 
   public PortfolioService(Configuration config) {
-    this.portfolioNum = config.portoflioNum;
+    this.portfolioNum = config.portfolioNum;
 
     // "Bind" to the feed simulator
     feed = new PortfolioFeedSimulator();
 
-    Session session = newSession(config);
+    InitialContext jndiContext = config.newInitialContext();
+    Session consumingSession = newSession(jndiContext, config);
 
     // Create Queue consumer for handling with JMS queue for portfolio operations and status
     // requests.
-    newConsumer(session, config.queueName, this);
+    newConsumer(jndiContext, consumingSession, config.queueName, this);
+
+    // Here we create a new Session, as some broker (e.g, IBM_MQ), does not
+    // support the use of synchronous operations on a session which has already
+    // been used for asynchronous operations
+    Session publishlingSession = newSession(jndiContext, config);
 
     // Instantiate the Topic sender
-    portfolioTopicSender = new TopicSender(session, config.topicName);
+    portfolioTopicSender = new TopicSender(jndiContext, publishlingSession, config.topicName);
 
     // Instantiate the Responder for responses on temp queues
-    portfolioCurrentStatus = new Responder(session);
+    portfolioCurrentStatus = new Responder(publishlingSession);
   }
 
 
@@ -97,7 +101,6 @@ public class PortfolioService implements MessageListener {
       portfolio.setListener(listener);
     }
     log.debug("Portfolio service ready");
-
   }
 
   /**
@@ -185,17 +188,8 @@ public class PortfolioService implements MessageListener {
   /**
    * Creates a new JMS Session
    */
-  private static Session newSession(Configuration config) {
+  private static Session newSession(InitialContext jndiContext, Configuration config) {
     try {
-      // Prepare a Properties object to be passed to the InitialContext
-      // constructor giving the InitialContextFactory name and the JMS server url
-      Properties properties = new Properties();
-      properties.put(Context.INITIAL_CONTEXT_FACTORY, config.initialContextFactory);
-      properties.put(Context.PROVIDER_URL, config.jmsUrl);
-
-      InitialContext jndiContext = new InitialContext(properties);
-      log.info("JNDI Context[{}]...", jndiContext.getEnvironment());
-
       log.info("Looking up queue connection factory [{}]...", config.connectionFactoryName);
       ConnectionFactory connectionFactory =
           (ConnectionFactory) jndiContext.lookup(config.connectionFactoryName);
@@ -228,13 +222,19 @@ public class PortfolioService implements MessageListener {
   /**
    * Creates a new JMS Queue consumer.
    */
-  private static MessageConsumer newConsumer(Session session, String queueName,
-      MessageListener listener) {
+  private static MessageConsumer newConsumer(InitialContext jndiContext, Session session,
+      String queueName, MessageListener listener) {
 
     // Find our destination
     log.info("Looking up queue [{}]...", queueName);
     try {
-      Queue destination = session.createQueue(queueName);
+      Queue destination;
+      try {
+        destination = (Queue) jndiContext.lookup(queueName);
+      } catch (NamingException e) {
+        // In case of dynamic destinations
+        destination = session.createQueue(queueName);
+      }
 
       // Get the MessageConsumer from our Session and set the listener
       MessageConsumer consumer = session.createConsumer(destination);
