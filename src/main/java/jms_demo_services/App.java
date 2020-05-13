@@ -27,9 +27,9 @@ import jms_demo_services.portfolio.PortfolioService;
 public class App {
 
   private static Logger log = LoggerFactory.getLogger(App.class);
-  
+
   private static final String DEFAULT_BROKER = "ActiveMQ";
-  
+
   private static final String broker = System.getProperty("broker", DEFAULT_BROKER);
 
   public static void main(String[] args) {
@@ -40,17 +40,14 @@ public class App {
       props.load(is);
 
       // Read parameters
-      //@formatter:off
-      Configuration config =  new Configuration.Builder()
-        .withJmsURL(getProperty(props, "jmsUrl"))
-        .withInitialiContextFactory(getProperty(props, "initialContextFactory"))
+      Configuration config = new Configuration.Builder().withJmsURL(getProperty(props, "jmsUrl"))
+        .withInitialContextFactory(getProperty(props, "initialContextFactory"))
         .withConnectionFactoryName(props.getProperty("connectionFactoryName"))
         .withTopicName(props.getProperty("topicName"))
         .withQueueName(props.getProperty("queueName"))
         .withPortfolioNum(props.getProperty("portfolioNum"))
         .withCredentials(getProperty(props, "user"), getProperty(props, "password"))
         .build();
-      //@formatter:on
 
       // Create and start our service passing the supplied configuration
       new PortfolioService(config).start();
@@ -62,9 +59,8 @@ public class App {
       }
     }
   }
-  
+
   private static String getProperty(Properties props, String key) {
     return props.getProperty(broker + "." + key);
-    
   }
 }
