@@ -107,4 +107,5 @@ Now you can test this demo running the [Lightstreamer JMS Extender - Basic Portf
 
 ## Lightstreamer Compatibility Notes
 
+* Compatible with Lightstreamer JMS Extender SDK for Web Clients since version 2.0.0 or newer.
 * Compatible with Lightstreamer JMS Extender since version 2.0.0 or newer.
