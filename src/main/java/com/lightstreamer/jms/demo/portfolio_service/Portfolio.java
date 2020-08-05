@@ -13,7 +13,7 @@
  * the License.
  */
 
-package jms_demo_services.portfolio;
+package com.lightstreamer.jms.demo.portfolio_service;
 
 import java.util.HashMap;
 import java.util.Objects;

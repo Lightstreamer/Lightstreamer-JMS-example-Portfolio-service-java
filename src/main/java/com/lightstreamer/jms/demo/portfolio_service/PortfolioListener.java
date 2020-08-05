@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package jms_demo_services.portfolio;
+package com.lightstreamer.jms.demo.portfolio_service;
 
 /**
  * Used to receive data from the simulated portfolio feed in an

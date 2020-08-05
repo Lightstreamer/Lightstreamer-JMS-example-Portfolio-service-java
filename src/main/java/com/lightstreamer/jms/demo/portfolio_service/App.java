@@ -13,7 +13,7 @@
  * the License.
  */
 
-package jms_demo_services;
+package com.lightstreamer.jms.demo.portfolio_service;
 
 import java.io.InputStream;
 import java.util.Properties;
@@ -21,8 +21,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jms_demo_services.config.Configuration;
-import jms_demo_services.portfolio.PortfolioService;
+import com.lightstreamer.jms.demo.portfolio_service.config.Configuration;
 
 public class App {
 

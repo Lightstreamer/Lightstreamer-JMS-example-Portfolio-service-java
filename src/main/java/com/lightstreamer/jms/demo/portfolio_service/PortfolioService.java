@@ -13,7 +13,7 @@
  * the License.
  */
 
-package jms_demo_services.portfolio;
+package com.lightstreamer.jms.demo.portfolio_service;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -30,7 +30,8 @@ import javax.naming.NamingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jms_demo_services.config.Configuration;
+import com.lightstreamer.jms.demo.portfolio_service.config.Configuration;
+import com.lightstreamer.jms.demo.portfolio_service.message.PortfolioMessage;
 
 /**
  * @author Gialuca Finocchiaro

@@ -12,7 +12,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package jms_demo_services.config;
+package com.lightstreamer.jms.demo.portfolio_service.config;
 
 import java.util.Objects;
 import java.util.Optional;
