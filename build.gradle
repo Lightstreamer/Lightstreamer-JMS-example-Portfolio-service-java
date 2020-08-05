@@ -65,13 +65,13 @@ dependencies {
 
 version = '2.0.0'
 sourceCompatibility = '1.8'
-mainClassName = "jms_demo_services.App"
+mainClassName = "com.lightstreamer.jms.demo.portfolio_service.App"
 applicationDefaultJvmArgs = ["-Dbroker=$whichBroker"]
 
 task makePortfolioMessageJar(type:Jar, dependsOn: classes) {
     baseName = commonJarName
     from sourceSets.main.output.classesDirs.filter {
-        include 'jms_demo_services/portfolio/PortfolioMessage.class'
+        include 'com/lightstreamer/jms/demo/portfolio_service/message/PortfolioMessage.class'
     }
 }
 
